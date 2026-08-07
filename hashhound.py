@@ -73,11 +73,11 @@ class Finding:
         self.line       = line            # source line, for highlighting
 
 
-def hc(mode, hashfile="hash.txt", username=False):
+def hc(mode: str | None, hashfile: str = "hash.txt", username: bool = False) -> str:
     u = " --username" if username else ""
     return f"hashcat -m {mode} -a 0{u} {hashfile} {WORDLIST}"
 
-def john(fmt, hashfile="hash.txt"):
+def john(fmt: str | None, hashfile: str = "hash.txt") -> str:
     return f"john --format={fmt} --wordlist={WORDLIST} {hashfile}"
 
 
@@ -647,7 +647,7 @@ def sig_dollar9(line):
                    commands=[("if Cisco", hc("9300")),
                              ("if Juniper", "junos-decrypt '<value>'")])
 
-def match_file(tok):
+def match_file(tok: str) -> Finding | None:
     for e in FILE_TYPES:
         if not re.search(e["match"], tok, re.I):
             continue
@@ -669,7 +669,7 @@ def match_file(tok):
     return None
 
 
-def lookup_ext(arg):
+def lookup_ext(arg: str) -> dict | None:
     """Resolve a --ext argument (`.kdbx`, `kdbx`, or a path/name) to an entry."""
     base = arg.strip().split("/")[-1].split("\\")[-1]
     key  = base.lstrip(".").lower()
@@ -726,7 +726,7 @@ def _b64url(s):
         return None
 
 
-def classify_raw(token):
+def classify_raw(token: str) -> tuple[str | None, str | None, list, str | None]:
     t = token.strip()
     if HEX_RE.match(t) and len(t) in RAW_HEX_DB:
         return RAW_HEX_DB[len(t)][0][0], "ambiguous", RAW_HEX_DB[len(t)], \
@@ -738,7 +738,7 @@ def classify_raw(token):
     return None, None, [], None
 
 
-def identify_token(token, blob=""):
+def identify_token(token: str, blob: str = "") -> Finding | None:
     t = token.strip()
     if re.match(r'^\$9\$', t):
         return sig_dollar9(blob if blob else t)
