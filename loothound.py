@@ -34,8 +34,12 @@ import advisor as ad
 
 def read_input(arg):
     if arg and arg != "-":
-        with open(arg, errors="replace") as fh:
-            return fh.read()
+        try:
+            with open(arg, errors="replace") as fh:
+                return fh.read()
+        except OSError as e:
+            print(f"loothound: can't read {arg}: {e}", file=sys.stderr)
+            sys.exit(1)
     if not sys.stdin.isatty():
         return sys.stdin.read()
     return ""
